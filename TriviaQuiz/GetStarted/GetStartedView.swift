@@ -1,0 +1,220 @@
+//
+//  GetStartedView.swift
+//  TriviaQuiz
+//
+//  Created by Катя on 01.08.2025.
+//
+
+import UIKit
+
+final class GetStartedView: UIView {
+    
+    var onStartQuizButtonTapped: (() -> Void)?
+    var onOptionTapped: ((String) -> Void)?
+    var onNextQuestion: (() -> Void)?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .primaryTrivia
+        setupView()
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        activityIndicator.center = center
+
+    }
+    
+    // MARK: - UI
+    
+    private(set) lazy var quizView: QuizView = {
+        let view = QuizView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+    
+    private(set) lazy var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.style = .large
+        activityIndicator.color = UIColor(named: "customWhite")
+        activityIndicator.hidesWhenStopped = true
+        return activityIndicator
+    }()
+    
+    private lazy var historyButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitleColor(.white, for: .normal)
+        button.setTitle("Начать викторину", for: .normal)
+        button.backgroundColor = .primaryTrivia
+        button.layer.cornerRadius = 16
+        button.clipsToBounds = true
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        button.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        return button
+    }()
+    
+    private lazy var quizLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
+        label.text = "DAILYQUIZ"
+        label.font = UIFont.systemFont(ofSize: 40, weight: .black)
+        label.textColor = .customWhite
+        label.textAlignment = .center
+        return label
+    }()
+    
+    
+    private lazy var startStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.alignment = .center
+        stackView.spacing = 32
+        stackView.layer.cornerRadius = 16
+        stackView.backgroundColor = .customWhite
+        stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        return stackView
+    }()
+    
+    private lazy var welcomeLabel: UILabel = {
+        let label = UILabel()
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
+        label.text = "Добро пожаловать в DailyQuiz!"
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var startQuizButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitleColor(.white, for: .normal)
+        button.setTitle("Начать викторину", for: .normal)
+        button.backgroundColor = .primaryTrivia
+        button.layer.cornerRadius = 16
+        button.clipsToBounds = true
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return button
+    }()
+    
+    private lazy var resultView: ResultView = {
+        let view = ResultView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+    
+}
+
+extension GetStartedView {
+    func setupButtonAction() {
+        startQuizButton.addTarget(self, action: #selector(startQuizButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc
+    func startQuizButtonTapped() {
+        onStartQuizButtonTapped?()
+    }
+    
+    func showError(with message: NSAttributedString?) {
+        print(message)
+    }
+    
+    func showQuestion(with question: QuizQuestion) {
+        startStackView.isHidden = true
+        resultView.isHidden = true
+        quizView.isHidden = false
+  
+        
+        quizView.configure(with: question)
+        
+        quizView.onOptionSelected = { [weak self] option in
+            self?.onOptionTapped?(option)
+        }
+        
+        quizView.onNextQuestion = { [weak self] in
+            self?.onNextQuestion?()
+        }
+    }
+
+    func updateLoadingView(with status: Bool) {
+        if status {
+            activityIndicator.startAnimating()
+            startStackView.isHidden = true
+            resultView.isHidden = true
+            quizView.isHidden = true
+            historyButton.isHidden = true
+        } else {
+            activityIndicator.stopAnimating()
+        }
+    }
+    
+    func updateNextButton(_ isEnabled: Bool) {
+        quizView.updateButton(isEnabled)
+    }
+    
+    func showResultView(with result: ResultConfig) {
+        startStackView.isHidden = true
+        quizView.isHidden = true
+        quizLabel.isHidden = true
+        historyButton.isHidden = true
+        resultView.isHidden = false
+        resultView.configure(with: result)
+    }
+}
+
+// MARK: - UI Setups
+
+private extension GetStartedView {
+    func setupView() {
+        setupSubviews()
+        setupConstraints()
+        setupButtonAction()
+    }
+    
+    func setupSubviews() {
+        addSubview(quizView)
+        addSubview(activityIndicator)
+        addSubview(quizLabel)
+        addSubview(startStackView)
+        addSubview(resultView)
+
+        startStackView.addArrangedSubview(welcomeLabel)
+        startStackView.addArrangedSubview(startQuizButton)
+    }
+    
+    
+    func setupConstraints() {
+        quizLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
+        quizLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
+        quizLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
+ 
+        
+        startStackView.topAnchor.constraint(equalTo: quizLabel.bottomAnchor, constant: 32).isActive = true
+        startStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
+        startStackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        startStackView.bottomAnchor.constraint(lessThanOrEqualTo: safeAreaLayoutGuide.bottomAnchor, constant: -32).isActive = true
+        
+        
+        quizView.topAnchor.constraint(equalTo: quizLabel.bottomAnchor, constant: 32).isActive = true
+        quizView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 24).isActive = true
+        quizView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
+        
+        
+        resultView.topAnchor.constraint(equalTo: quizLabel.bottomAnchor, constant: 32).isActive = true
+        resultView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 24).isActive = true
+        resultView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
+    }
+}
+
