@@ -9,6 +9,7 @@ import UIKit
 // MARK: - Cell
 
 final class QuizHistoryCell: UICollectionViewCell {
+    typealias Config = QuizHistoryCellConfig
     
     var config: Config?
     let nameLabel = UILabel()
@@ -41,6 +42,7 @@ final class QuizHistoryCell: UICollectionViewCell {
 }
 
 private extension QuizHistoryCell {
+    
     func setupCell() {
         contentView.backgroundColor = .customWhite
         contentView.layer.cornerRadius = 40
@@ -88,4 +90,4 @@ private extension QuizHistoryCell {
     }
 }
 final class QuizHistoryCellLayout {}
-typealias Config = QuizHistoryCellConfig
+

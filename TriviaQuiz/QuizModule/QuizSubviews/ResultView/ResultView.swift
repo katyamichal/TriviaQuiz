@@ -25,6 +25,9 @@ struct ResultConfig {
 }
 
 final class ResultView: UIView {
+    
+    var onRestart: (() -> Void)?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -114,7 +117,15 @@ final class ResultView: UIView {
         ratingImage.image = model.ratingImage
     }
 }
-
+extension ResultView {
+    func setupAction() {
+        restartButton.addTarget(self, action: #selector(restartButtonTap), for: .touchUpInside)
+    }
+    
+    @objc func restartButtonTap() {
+        onRestart?()
+    }
+}
 
 // MARK: - UI Setup
 private extension ResultView {
@@ -123,12 +134,12 @@ private extension ResultView {
         layer.cornerRadius = 46
         setupSubviews()
         setupLayout()
+        setupAction()
     }
     
     func setupSubviews() {
-        addSubview(titleLabel)
-        addSubview(ratingImage)
-        addSubview(mainStackView)
+        [titleLabel, ratingImage, mainStackView]
+            .forEach { addSubview($0) }
     }
     
     func setupLayout() {

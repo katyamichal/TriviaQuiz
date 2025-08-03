@@ -69,7 +69,7 @@ final class QuestionView: UIView {
     
     // MARK: - Rebuild options
     
-    func configure(with question: QuizQuestion) {
+    func configure(with question: QuizQuestion, isLast: Bool = true) {
         
         titleLabel.text = question.title
         questionLabel.text = question.question
@@ -84,6 +84,7 @@ final class QuestionView: UIView {
             view.accessibilityIdentifier = option.id
             optionsStack.addArrangedSubview(view)
         }
+        
     }
 
     func updateButton(_ isEnabled: Bool) {

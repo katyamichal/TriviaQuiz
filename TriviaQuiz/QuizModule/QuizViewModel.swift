@@ -10,36 +10,34 @@ import Combine
 
 public final class QuizViewModel {
     
+    private let service: QuizServiceProtocol
+    private let ratingRenderer: RatingRenderer
+    
     private var questions: [QuizQuestion]?
     
     var onShowResult: ((ResultConfig) -> Void)?
     var onShowHistory: (() -> Void)?
+    var onResetView: (() -> Void)?
+    
+    // quiz state
     private var correctAnswersCount: Int = 0
-    
     private var currentQuestionIndex: Int = 0
-    
     private var userAnswers: [UserAnswer] = []
-    
-    private let ratingRenderer: RatingRenderer
-    
+
     @Published var currentQuestion: QuizQuestion?
     @Published var errorMessage: NSAttributedString? = nil
     @Published private(set) var isLoading: Bool
     @Published private(set) var isNextButtonEnabled: Bool
     
-    private let service: QuizServiceProtocol
-    
-//    private let quizService: NetworkServiceProtocol
-
+ 
     
     init(
          service: QuizServiceProtocol,
-       //  quizService: NetworkServiceProtocol,
          isLoading: Bool = false,
-         ratingRenderer: RatingRenderer = RatingRenderer()
+         ratingRenderer: RatingRenderer
     ) {
         self.service = service
-     //   self.quizService = quizService
+
         self.isLoading = isLoading
         self.isNextButtonEnabled = false
         self.ratingRenderer = ratingRenderer
@@ -108,6 +106,20 @@ public final class QuizViewModel {
         } else {
             showResult()
         }
+    }
+    
+    func restart() {
+        defer {
+            onResetView?()
+        }
+        correctAnswersCount = 0
+        currentQuestionIndex = 0
+        userAnswers = []
+        currentQuestion = nil
+        questions = []
+        isNextButtonEnabled = false
+        isLoading = false
+        currentQuestion = nil
     }
 }
 

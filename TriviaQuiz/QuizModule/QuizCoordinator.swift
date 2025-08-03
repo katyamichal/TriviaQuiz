@@ -22,7 +22,7 @@ final class QuizCoordinatorDefault: QuizCoordinator {
          childCoordinators: [Coordinator] = [],
          window: UIWindow,
          navigationController: UINavigationController = UINavigationController(),
-         factory: QuizAssembly
+         factory: QuizAssembly = QuizAssembly()
     ) {
         self.parentCoordinator = parentCoordinator
         self.childCoordinators = childCoordinators

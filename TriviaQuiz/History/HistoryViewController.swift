@@ -39,6 +39,7 @@ final class HistoryViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationAppearance()
         setupRightNavigationButton()
         viewModel.getQuizHistory()
     }
@@ -88,6 +89,16 @@ final class HistoryViewController: UIViewController {
  }
 
 private extension HistoryViewController {
+    func setupNavigationAppearance() {
+        guard let navigationBar = navigationController?.navigationBar else { return }
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.shadowColor = .clear
+        navigationBar.standardAppearance = appearance
+        navigationBar.isTranslucent = true
+    }
+    
     
     func setupRightNavigationButton() {
         let button = UIButton()

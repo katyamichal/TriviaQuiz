@@ -12,7 +12,6 @@ class QuizViewController: UIViewController {
     
     private let viewModel: QuizViewModel
     private var quizView: QuizView { return self.view as! QuizView }
-    
     private var store = Set<AnyCancellable>()
     
     // MARK: - Inits
@@ -77,6 +76,10 @@ private extension QuizViewController {
         viewModel.onShowResult = { [weak self] result in
             self?.quizView.showResultView(with: result)
         }
+        
+        viewModel.onResetView = { [weak self] in
+            self?.quizView.reset()
+        }
     }
     
     
@@ -85,16 +88,20 @@ private extension QuizViewController {
             viewModel?.loadQuiz()
         }
         
-        quizView.onHistoryButton = { [weak self] in
-            self?.viewModel.onShowHistory?()
+        quizView.onHistoryButton = { [weak viewModel] in
+            viewModel?.onShowHistory?()
         }
         
-        quizView.onOptionTapped = { [unowned self] option in
-            viewModel.handleSelectedOption(option)
+        quizView.onOptionTapped = { [weak viewModel] option in
+            viewModel?.handleSelectedOption(option)
         }
         
-        quizView.onNextQuestion = { [unowned self] in
-            viewModel.handleNextQuestion()
+        quizView.onNextQuestion = { [weak viewModel] in
+            viewModel?.handleNextQuestion()
+        }
+        
+        quizView.onRestart = {  [weak viewModel] in
+            viewModel?.restart()
         }
     }
 }

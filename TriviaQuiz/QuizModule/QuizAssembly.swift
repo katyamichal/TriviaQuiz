@@ -12,9 +12,10 @@ import Foundation
 
 final class QuizAssembly {
      func resolveViewModel() -> QuizViewModel {
+        let render = RatingRenderer()
         let networkService = NetworkService()
         let service = QuizService(networkService: networkService)
-        let viewModel = QuizViewModel(service: service)
+         let viewModel = QuizViewModel(service: service, ratingRenderer: render)
         return viewModel
     }
 }

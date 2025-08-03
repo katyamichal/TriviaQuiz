@@ -24,7 +24,6 @@ final class HistoryView: UIView {
     // MARK: - UI
     
     private let emptyHistoryView = EmptyHistoryView()
-    private let logo: UIImageView = .logo
     
     private(set) lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: Self.makeLayout())
@@ -83,7 +82,7 @@ private extension HistoryView {
         setupCollectionView()
         addSubview(titleLabel)
         addSubview(emptyHistoryView)
-        addSubview(logo)
+
     }
     
     func setupCollectionView() {
@@ -98,18 +97,11 @@ private extension HistoryView {
         emptyHistoryView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 40).isActive = true
         emptyHistoryView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
         emptyHistoryView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
-        emptyHistoryView.bottomAnchor.constraint(equalTo: logo.topAnchor, constant: -338).isActive = true
-        
-        
-        logo.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -76).isActive = true
-        logo.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        logo.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        logo.widthAnchor.constraint(equalToConstant: 180).isActive = true
-        
-        collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor ,constant: 40).isActive = true
+    
+        collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor ,constant: 24).isActive = true
         collectionView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0).isActive = true
         collectionView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -41).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -41).isActive = true
     }
 
      static func makeLayout() -> UICollectionViewLayout {
