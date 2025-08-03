@@ -8,10 +8,10 @@
 import Foundation
 
 struct HistoryQuiz: Decodable {
-    let id: UUID
+    let id: String
     let quizName: String
 
     /// Время спрохождения.
-    let created: String
+    let created: Date
     let rating: Int
 }

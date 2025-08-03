@@ -11,7 +11,7 @@ struct QuizHistoryCellConfig {
 
     static let reuseId = String(describing: QuizHistoryCellConfig.self)
 
-    let id: UUID
+    let id: String
     let quizName: NSAttributedString
     let dateDay: NSAttributedString
     let time: NSAttributedString

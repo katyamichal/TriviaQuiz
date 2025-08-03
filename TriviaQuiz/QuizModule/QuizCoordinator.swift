@@ -6,23 +6,8 @@
 //
 
 import UIKit
-// DI Container, better Swinject though
-final class TriviaQuizScreenFactory {
-    
-    func resoveQuizControllerController() -> QuizViewController {
-        let networkService = NetworkService()
-        let viewModel = QuizViewModel(
-            quizService: networkService)
-        let controller = QuizViewController(viewModel: viewModel)
-        return controller
-    }
-    
-}
 
-
-protocol QuizCoordinator: Coordinator {
-    
-}
+protocol QuizCoordinator: Coordinator {}
 
 final class QuizCoordinatorDefault: QuizCoordinator {
     
@@ -30,22 +15,34 @@ final class QuizCoordinatorDefault: QuizCoordinator {
     var childCoordinators: [Coordinator] = []
     private var window: UIWindow
     private var navigationController: UINavigationController
-
-
-    init(parentCoordinator: Coordinator? = nil, childCoordinators: [Coordinator] = [], window: UIWindow, navigationController: UINavigationController = UINavigationController()) {
+    private let factory: QuizAssembly
+    
+    
+    init(parentCoordinator: Coordinator? = nil,
+         childCoordinators: [Coordinator] = [],
+         window: UIWindow,
+         navigationController: UINavigationController = UINavigationController(),
+         factory: QuizAssembly
+    ) {
         self.parentCoordinator = parentCoordinator
         self.childCoordinators = childCoordinators
         self.window = window
         self.navigationController = navigationController
-
+        self.factory = factory
     }
     
     func start() {
-        let networkService = NetworkService()
-        
-        let viewModel = QuizViewModel(
-            quizService: networkService)
-        
+        makeView()
+    }
+    
+    func removeFromParent() {
+        childCoordinators.removeLast()
+    }
+}
+
+private extension QuizCoordinatorDefault {
+    func makeView() {
+        let viewModel = factory.resolveViewModel()
         let controller = QuizViewController(viewModel: viewModel)
         
         viewModel.onShowHistory = { [weak self] in
@@ -62,9 +59,5 @@ final class QuizCoordinatorDefault: QuizCoordinator {
         historyCoordinator.parentCoordinator = self
         childCoordinators.append(historyCoordinator)
         historyCoordinator.start()
-    }
-    
-    func removeFromParent() {
-        childCoordinators.removeLast()
     }
 }

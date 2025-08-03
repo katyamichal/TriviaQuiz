@@ -42,7 +42,7 @@ final class HistoryCoordinatorDefault: HistoryCoordinator {
 
 private extension HistoryCoordinatorDefault {
     func makeHistoryView() {
-        let viewModel = HistoryViewModel()
+        let viewModel = HistoryViewModel(service: HistoryService())
         let controller = HistoryViewController(viewModel: viewModel)
         viewModel.onReturnButton = { [weak self] in
             self?.finish()

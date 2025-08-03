@@ -23,13 +23,15 @@ final class HistoryViewModel: NSObject {
     
     private var items = [any CollectionCellConfig & Identifiable]()
     private let ratingRenderer: RatingRenderer
-
+    private let service: HistoryServiceProtocol
 
     init(
+        service: HistoryServiceProtocol,
         snapshot: DataSourceSnapshot = DataSourceSnapshot(),
         ratingRenderer: RatingRenderer = RatingRenderer(config: .small()),
         errorMessage: String? = nil
     ) {
+        self.service = service
         self.snapshot = snapshot
         self.ratingRenderer = ratingRenderer
         self.errorMessage = errorMessage
@@ -40,34 +42,22 @@ final class HistoryViewModel: NSObject {
 // MARK: - Internal
 
 extension HistoryViewModel {
-
-    func getQuizHistory() {
-        // запрос в бд
-        let mockData: [HistoryQuiz] = [
-            HistoryQuiz(
-                id: UUID(),
-                quizName: "История Древнего Рима",
-                created: "2025-08-01 12:03:00",
-                rating: 4
-            ),
-            HistoryQuiz(
-                id: UUID(),
-                quizName: "Физика для начинающих",
-                created: "2025-08-02 09:45:00",
-                rating: 5
-            ),
-            HistoryQuiz(
-                id: UUID(),
-                quizName: "Тест по биологии",
-                created: "2025-08-03 17:20:00",
-                rating: 3
-            )
-        ]
-        
     
-        items = mockData.map { makeQuizItem($0) }
-      //  updateSnapshot()
-        errorMessage = "Вы еще не проходили ни одной викторины"
+    func getQuizHistory() {
+        Task { [weak self] in
+            guard let self else {
+                // проверить отмену
+                return
+            }
+          
+            let history = await service.fetchQuizHistory()
+            if history.isEmpty {
+                self.errorMessage = "Вы еще не проходили ни одной викторины"
+            } else {
+                self.items = history.map { self.makeQuizItem($0) }
+                self.updateSnapshot()
+            }
+        }
     }
 }
 
@@ -98,10 +88,9 @@ private extension HistoryViewModel {
 
     func makeQuizItem(_ quiz: HistoryQuiz) -> QuizHistoryCellConfig {
         let quizNameAttr = quiz.quizName.attributed(font: .quizName)
-        
-        let date = quiz.created.toDate() ?? Date()
-        let dayAttr = date.dayMonthString().attributed(font: .quizDate, color: .black)
-        let timeAttr = date.timeString().attributed(font: .quizDate, color: .black)
+    
+        let dayAttr = quiz.created.dayMonthString().attributed(font: .quizDate, color: .black)
+        let timeAttr = quiz.created.timeString().attributed(font: .quizDate, color: .black)
         
         let ratingImage = ratingRenderer.ratingImage(quiz.rating)
         

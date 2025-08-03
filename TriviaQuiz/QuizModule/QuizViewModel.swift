@@ -19,24 +19,27 @@ public final class QuizViewModel {
     private var currentQuestionIndex: Int = 0
     
     private var userAnswers: [UserAnswer] = []
-
+    
     private let ratingRenderer: RatingRenderer
+    
     @Published var currentQuestion: QuizQuestion?
     @Published var errorMessage: NSAttributedString? = nil
     @Published private(set) var isLoading: Bool
     @Published private(set) var isNextButtonEnabled: Bool
     
+    private let service: QuizServiceProtocol
     
-    private let quizService: NetworkServiceProtocol
+//    private let quizService: NetworkServiceProtocol
 
     
     init(
-         quizService: NetworkServiceProtocol,
+         service: QuizServiceProtocol,
+       //  quizService: NetworkServiceProtocol,
          isLoading: Bool = false,
          ratingRenderer: RatingRenderer = RatingRenderer()
     ) {
-
-        self.quizService = quizService
+        self.service = service
+     //   self.quizService = quizService
         self.isLoading = isLoading
         self.isNextButtonEnabled = false
         self.ratingRenderer = ratingRenderer
@@ -49,12 +52,11 @@ public final class QuizViewModel {
             guard let self = self else { return }
             
             do {
-                let response = try await self.quizService.fetchQuiz(request: request)
+                let response = try await self.service.loadQuizQuestions()
                 self.makeQuestions(with: response)
                 self.currentQuestion = self.questions?[currentQuestionIndex]
             } catch {
                 self.errorMessage = NSAttributedString("Ошибка! Попробуйте еще раз")
-                
             }
             isLoading = false
         }
@@ -136,6 +138,8 @@ private extension QuizViewModel {
         let ratingImage = ratingRenderer.ratingImage(correctAnswersCount)
         let result = ResultConfig(score: correctAnswersCount, total: questions.count, ratingImage: ratingImage)
         onShowResult?(result)
+        
+        service.saveQuiz(with: correctAnswersCount)
         
         // отладка
         print("✅ Тест завершён!")
