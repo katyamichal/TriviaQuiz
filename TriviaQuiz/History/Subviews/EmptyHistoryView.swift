@@ -23,26 +23,19 @@ final class EmptyHistoryView: UIView {
     
     // MARK: - UI
     
-    private lazy var stackView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [messageLabel, startButton])
-        stack.axis = .vertical
-        stack.spacing = 48
-        stack.alignment = .center
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-    
-    private let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-        label.textColor = .label
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private lazy var messageLabel = TriviaLabel(style: .description)
     
     private let startButton = TriviaButton(title: "Начать викторину", style: .primary, width: 280, height: 50)
+    
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [messageLabel, startButton])
+        stackView.axis = .vertical
+        stackView.spacing = 40
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+       
+        return stackView
+    }()
 }
 
 extension EmptyHistoryView {

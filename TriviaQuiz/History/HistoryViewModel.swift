@@ -8,15 +8,6 @@
 import UIKit
 import Combine
 
-struct HistoryQuiz: Decodable {
-    let id: UUID
-    let quizName: String
-
-    /// Время спрохождения.
-    let created: String
-    let rating: Int
-}
-
 final class HistoryViewModel: NSObject {
     
     enum HistorySection: Hashable {
@@ -75,7 +66,7 @@ extension HistoryViewModel {
         
     
         items = mockData.map { makeQuizItem($0) }
-        //updateSnapshot()
+      //  updateSnapshot()
         errorMessage = "Вы еще не проходили ни одной викторины"
     }
 }

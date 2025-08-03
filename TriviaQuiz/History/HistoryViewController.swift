@@ -24,6 +24,7 @@ final class HistoryViewController: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         subscribeSnapshot()
+        viewBinding()
 
     }
 
@@ -84,7 +85,6 @@ final class HistoryViewController: UIViewController {
              self?.viewModel.onReturnButton?()
          }
      }
-     
  }
 
 private extension HistoryViewController {

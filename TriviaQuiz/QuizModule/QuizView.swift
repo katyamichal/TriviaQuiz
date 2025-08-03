@@ -28,7 +28,6 @@ final class QuizView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         activityIndicator.center = center
-
     }
     
     // MARK: - UI
@@ -59,17 +58,7 @@ final class QuizView: UIView {
         return button
     }()
     
-    private lazy var quizLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 0
-        label.text = "DAILYQUIZ"
-        label.font = UIFont.systemFont(ofSize: 40, weight: .black)
-        label.textColor = .customWhite
-        label.textAlignment = .center
-        return label
-    }()
+    private let logo: UIImageView = .logo
     
     private lazy var startStackView: UIStackView = {
         let stackView = UIStackView()
@@ -77,14 +66,15 @@ final class QuizView: UIView {
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.alignment = .center
-        stackView.spacing = 32
+        stackView.spacing = 48
         stackView.layer.cornerRadius = 16
         stackView.backgroundColor = .customWhite
-        stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 24, leading: 16, bottom: 24, trailing: 16)
         stackView.isLayoutMarginsRelativeArrangement = true
         return stackView
     }()
     
+    // TODO: - сменить на trivia
     private lazy var welcomeLabel: UILabel = {
         let label = UILabel()
         label.adjustsFontForContentSizeCategory = true
@@ -94,17 +84,8 @@ final class QuizView: UIView {
         return label
     }()
     
-    private lazy var startQuizButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(.white, for: .normal)
-        button.setTitle("Начать викторину", for: .normal)
-        button.backgroundColor = .primaryTrivia
-        button.layer.cornerRadius = 16
-        button.clipsToBounds = true
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        return button
-    }()
+    
+    private lazy var startButton = TriviaButton(title: "Начать викторину", style: .primary, width: 280, height: 50)
     
     // MARK: Результат View
     
@@ -118,9 +99,9 @@ final class QuizView: UIView {
 }
 
 extension QuizView {
-    func setupButtonAction() {
+    func setupButtonActions() {
         historyButton.addTarget(self, action: #selector(historyButtonTapped), for: .touchUpInside)
-        startQuizButton.addTarget(self, action: #selector(startQuizButtonTapped), for: .touchUpInside)
+        startButton.addTarget(self, action: #selector(startQuizButtonTapped), for: .touchUpInside)
     }
     
     @objc
@@ -133,7 +114,6 @@ extension QuizView {
         onStartQuizButton?()
     }
 
-    
     func showError(with message: NSAttributedString?) {
         print(message)
     }
@@ -176,7 +156,7 @@ extension QuizView {
     func showResultView(with result: ResultConfig) {
         startStackView.isHidden = true
         quizView.isHidden = true
-        quizLabel.isHidden = true
+        logo.isHidden = true
         historyButton.isHidden = true
         resultView.isHidden = false
         resultView.configure(with: result)
@@ -189,19 +169,19 @@ private extension QuizView {
     func setupView() {
         setupSubviews()
         setupConstraints()
-        setupButtonAction()
+        setupButtonActions()
     }
     
     func setupSubviews() {
         addSubview(historyButton)
         addSubview(quizView)
         addSubview(activityIndicator)
-        addSubview(quizLabel)
+        addSubview(logo)
         addSubview(startStackView)
         addSubview(resultView)
 
         startStackView.addArrangedSubview(welcomeLabel)
-        startStackView.addArrangedSubview(startQuizButton)
+        startStackView.addArrangedSubview(startButton)
     }
     
     
@@ -209,23 +189,24 @@ private extension QuizView {
         historyButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
         historyButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         
-        quizLabel.topAnchor.constraint(equalTo: historyButton.bottomAnchor, constant: 96).isActive = true
-        quizLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
-        quizLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
+        logo.topAnchor.constraint(equalTo: historyButton.bottomAnchor, constant: 96).isActive = true
+        logo.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        logo.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        logo.widthAnchor.constraint(equalToConstant: 180).isActive = true
  
         
-        startStackView.topAnchor.constraint(equalTo: quizLabel.bottomAnchor, constant: 32).isActive = true
+        startStackView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32).isActive = true
         startStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
         startStackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
         startStackView.bottomAnchor.constraint(lessThanOrEqualTo: safeAreaLayoutGuide.bottomAnchor, constant: -32).isActive = true
         
         
-        quizView.topAnchor.constraint(equalTo: quizLabel.bottomAnchor, constant: 32).isActive = true
+        quizView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32).isActive = true
         quizView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 24).isActive = true
         quizView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
         
         
-        resultView.topAnchor.constraint(equalTo: quizLabel.bottomAnchor, constant: 32).isActive = true
+        resultView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32).isActive = true
         resultView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 24).isActive = true
         resultView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
     }

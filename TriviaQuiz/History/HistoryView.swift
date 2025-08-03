@@ -12,7 +12,6 @@ final class HistoryView: UIView {
     var onStart: (() -> Void)?
     
     override init(frame: CGRect) {
-    
         super.init(frame: frame)
         setupView()
     }
@@ -21,11 +20,6 @@ final class HistoryView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-//
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        collectionView.frame = bounds.inset(by: safeAreaInsets)
-//    }
     
     // MARK: - UI
     
@@ -59,6 +53,7 @@ final class HistoryView: UIView {
 
 extension HistoryView {
     func showError(with message: String) {
+        emptyHistoryView.isHidden = false
         emptyHistoryView.updateMessage(with: message)
         collectionView.isHidden = true
     }
@@ -78,13 +73,19 @@ private extension HistoryView {
 
     func setupView() {
         backgroundColor = .primaryTrivia
+        setupSubviews()
+        setupConstraints()
+        setupAction()
+    }
+    
+    func setupSubviews() {
+        emptyHistoryView.isHidden = true
         setupCollectionView()
         addSubview(titleLabel)
         addSubview(emptyHistoryView)
         addSubview(logo)
-        setupConstraints()
     }
-
+    
     func setupCollectionView() {
         addSubview(collectionView)
     }
@@ -97,6 +98,7 @@ private extension HistoryView {
         emptyHistoryView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 40).isActive = true
         emptyHistoryView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
         emptyHistoryView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
+        emptyHistoryView.bottomAnchor.constraint(equalTo: logo.topAnchor, constant: -338).isActive = true
         
         
         logo.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -76).isActive = true
