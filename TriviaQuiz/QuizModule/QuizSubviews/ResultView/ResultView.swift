@@ -7,24 +7,9 @@
 
 import UIKit
 
-struct ResultConfig {
-    let rating: String
-    let commentTitle: String
-    let commentSubtitle: String
-    let buttonTitle: String
-    let ratingImage: UIImage
-    
-    init(score: Int, total: Int, ratingImage: UIImage) {
-          self.rating = "\(score) из 5"
-          let resultCase = ResultCase.from(score: score)
-          self.commentTitle = resultCase.title
-          self.commentSubtitle = resultCase.subtitle(for: score, total: total)
-          self.buttonTitle = "Пройти ещё раз"
-          self.ratingImage = ratingImage
-      }
-}
-
 final class ResultView: UIView {
+    
+    var onRestart: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -115,7 +100,15 @@ final class ResultView: UIView {
         ratingImage.image = model.ratingImage
     }
 }
-
+extension ResultView {
+    func setupAction() {
+        restartButton.addTarget(self, action: #selector(restartButtonTap), for: .touchUpInside)
+    }
+    
+    @objc func restartButtonTap() {
+        onRestart?()
+    }
+}
 
 // MARK: - UI Setup
 private extension ResultView {
@@ -124,12 +117,12 @@ private extension ResultView {
         layer.cornerRadius = 46
         setupSubviews()
         setupLayout()
+        setupAction()
     }
     
     func setupSubviews() {
-        addSubview(titleLabel)
-        addSubview(ratingImage)
-        addSubview(mainStackView)
+        [titleLabel, ratingImage, mainStackView]
+            .forEach { addSubview($0) }
     }
     
     func setupLayout() {

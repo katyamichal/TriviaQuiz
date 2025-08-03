@@ -1,5 +1,5 @@
 //
-//  GetStartedViewController.swift
+//  QuizViewController.swift
 //  TriviaQuiz
 //
 //  Created by Катя on 01.08.2025.
@@ -8,16 +8,15 @@
 import UIKit
 import Combine
 
-class GetStartedViewController: UIViewController {
+class QuizViewController: UIViewController {
     
-    private let viewModel: GetStartedViewModel
-    private var getStartedView: GetStartedView { return self.view as! GetStartedView }
-    
+    private let viewModel: QuizViewModel
+    private var quizView: QuizView { return self.view as! QuizView }
     private var store = Set<AnyCancellable>()
     
     // MARK: - Inits
     
-    init(viewModel: GetStartedViewModel) {
+    init(viewModel: QuizViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         subscribeLoader()
@@ -30,7 +29,7 @@ class GetStartedViewController: UIViewController {
     }
 
     override func loadView() {
-        view = GetStartedView()
+        view = QuizView()
     }
 
     override func viewDidLoad() {
@@ -38,13 +37,13 @@ class GetStartedViewController: UIViewController {
     }
 }
 
-private extension GetStartedViewController {
+private extension QuizViewController {
     func subscribeLoader() {
         viewModel.$isLoading
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isShowLoader in
                 guard let self else { return }
-                self.getStartedView.updateLoadingView(with: isShowLoader)
+                self.quizView.updateLoadingView(with: isShowLoader)
             }
             .store(in: &store)
         
@@ -52,7 +51,7 @@ private extension GetStartedViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] errorMessage in
                 guard let self else { return }
-                self.getStartedView.showError(with: errorMessage)
+                self.quizView.showError(with: errorMessage)
             }
             .store(in: &store)
         
@@ -62,35 +61,47 @@ private extension GetStartedViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] question in
                 guard let self, let question else { return }
-                self.getStartedView.showQuestion(with: question)
+                self.quizView.showQuestion(with: question)
             }
             .store(in: &store)
         
         viewModel.$isNextButtonEnabled
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isEnabled in
-                self?.getStartedView.updateNextButton(isEnabled)
+                self?.quizView.updateNextButton(isEnabled)
                 
             }
             .store(in: &store)
         
         viewModel.onShowResult = { [weak self] result in
-            self?.getStartedView.showResultView(with: result)
+            self?.quizView.showResultView(with: result)
+        }
+        
+        viewModel.onResetView = { [weak self] in
+            self?.quizView.reset()
         }
     }
     
     
     func viewBinding() {
-        getStartedView.onStartQuizButtonTapped = { [weak viewModel] in
+        quizView.onStartQuizButton = { [weak viewModel] in
             viewModel?.loadQuiz()
         }
         
-        getStartedView.onOptionTapped = { [unowned self] option in
-            viewModel.handleSelectedOption(option)
+        quizView.onHistoryButton = { [weak viewModel] in
+            viewModel?.onShowHistory?()
         }
         
-        getStartedView.onNextQuestion = { [unowned self] in
-            viewModel.handleNextQuestion()
+        quizView.onOptionTapped = { [weak viewModel] option in
+            viewModel?.handleSelectedOption(option)
+        }
+        
+        quizView.onNextQuestion = { [weak viewModel] in
+            viewModel?.handleNextQuestion()
+        }
+        
+        quizView.onRestart = {  [weak viewModel] in
+            viewModel?.restart()
         }
     }
 }

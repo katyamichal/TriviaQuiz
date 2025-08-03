@@ -1,5 +1,5 @@
 //
-//  QuizView.swift
+//  QuestionView.swift
 //  TriviaQuiz
 //
 //  Created by Катя on 01.08.2025.
@@ -11,7 +11,7 @@ struct QuizViewConfig {
     
 }
 
-final class QuizView: UIView {
+final class QuestionView: UIView {
     
     var onOptionSelected: ((String) -> Void)?
     var onNextQuestion: (() -> Void)?
@@ -69,7 +69,7 @@ final class QuizView: UIView {
     
     // MARK: - Rebuild options
     
-    func configure(with question: QuizQuestion) {
+    func configure(with question: QuizQuestion, isLast: Bool = true) {
         
         titleLabel.text = question.title
         questionLabel.text = question.question
@@ -84,6 +84,7 @@ final class QuizView: UIView {
             view.accessibilityIdentifier = option.id
             optionsStack.addArrangedSubview(view)
         }
+        
     }
 
     func updateButton(_ isEnabled: Bool) {
@@ -97,7 +98,7 @@ final class QuizView: UIView {
     }
 }
 
-private extension QuizView {
+private extension QuestionView {
     func setupNextButtonAction() {
         nextButton.addTarget(self, action: #selector(onNext), for: .touchUpInside)
     }
@@ -112,7 +113,7 @@ private extension QuizView {
     }
 }
 
-private extension QuizView {
+private extension QuestionView {
     func setupView() {
         backgroundColor = .customWhite
         layer.cornerRadius = 46

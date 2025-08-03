@@ -24,7 +24,7 @@ extension RatingRendererConfig {
     static func `default`() -> Self {
         let starSize = CGSize(width: 43.0, height: 43.0)
         let starImage = UIGraphicsImageRenderer(size: starSize).image {
-            UIImage(systemName: "star.fill")?.draw(in: $0.cgContext.boundingBoxOfClipPath)
+            UIImage(named: "activeStar")?.draw(in: $0.cgContext.boundingBoxOfClipPath)
         }
         return RatingRendererConfig(
             ratingRange: 1...5,
@@ -34,6 +34,22 @@ extension RatingRendererConfig {
             spacing: 1.0
         )
     }
+    
+    
+    static func small() -> Self {
+        let starSize = CGSize(width: 13.0, height: 13.0)
+        let starImage = UIGraphicsImageRenderer(size: starSize).image {
+            UIImage(named: "activeStar")?.draw(in: $0.cgContext.boundingBoxOfClipPath)
+        }
+        return RatingRendererConfig(
+            ratingRange: 1...5,
+            starImage: starImage,
+            tintColor: .yellowTrivia,
+            fadeColor: .greyTrivia,
+            spacing: 3
+        )
+    }
+    
 
 }
 
