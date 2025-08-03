@@ -98,59 +98,6 @@ final class QuizView: UIView {
     private var resultViewTopConstraint: NSLayoutConstraint?
 }
 
-// MARK: - Setup and Actions
-
-private extension QuizView {
-    func setupView() {
-        setupSubviews()
-        setupConstraints()
-        setupButtonActions()
-    }
-
-    func setupSubviews() {
-        [historyButton, quizView, activityIndicator, logo, startStackView, resultView, messageLabel].forEach(addSubview)
-        startStackView.addArrangedSubview(welcomeLabel)
-        startStackView.addArrangedSubview(startButton)
-    }
-
-    func setupConstraints() {
-        quizViewTopConstraint = quizView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32)
-        resultViewTopConstraint = resultView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32)
-        
-        historyButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
-        historyButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        
-        logo.topAnchor.constraint(equalTo: historyButton.bottomAnchor, constant: 46).isActive = true
-        logo.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        logo.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        logo.widthAnchor.constraint(equalToConstant: 180).isActive = true
-        
-        startStackView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32).isActive = true
-        startStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        startStackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        startStackView.bottomAnchor.constraint(lessThanOrEqualTo: safeAreaLayoutGuide.bottomAnchor, constant: -32).isActive = true
-        
-        quizView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 24).isActive = true
-        quizView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
-        
-        messageLabel.topAnchor.constraint(equalTo: startStackView.bottomAnchor, constant: 16).isActive = true
-        messageLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        
-        resultView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 24).isActive = true
-        resultView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
-        
-        
-        quizViewTopConstraint?.isActive = true
-        resultViewTopConstraint?.isActive = true
-    }
-
-    func setupButtonActions() {
-        historyButton.addTarget(self, action: #selector(historyButtonTapped), for: .touchUpInside)
-        startButton.addTarget(self, action: #selector(startQuizButtonTapped), for: .touchUpInside)
-        resultView.onRestart = { [weak self] in self?.onRestart?() }
-    }
-}
-
 // MARK: - Public Interface
 
 extension QuizView {
@@ -220,5 +167,58 @@ extension QuizView {
         resultViewTopConstraint?.isActive = false
         resultViewTopConstraint = resultView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32)
         resultViewTopConstraint?.isActive = true
+    }
+}
+
+// MARK: - Setup and Actions
+
+private extension QuizView {
+    func setupView() {
+        setupSubviews()
+        setupConstraints()
+        setupButtonActions()
+    }
+
+    func setupSubviews() {
+        [historyButton, quizView, activityIndicator, logo, startStackView, resultView, messageLabel].forEach(addSubview)
+        startStackView.addArrangedSubview(welcomeLabel)
+        startStackView.addArrangedSubview(startButton)
+    }
+
+    func setupConstraints() {
+        quizViewTopConstraint = quizView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32)
+        resultViewTopConstraint = resultView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32)
+        
+        historyButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        historyButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        
+        logo.topAnchor.constraint(equalTo: historyButton.bottomAnchor, constant: 46).isActive = true
+        logo.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        logo.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        logo.widthAnchor.constraint(equalToConstant: 180).isActive = true
+        
+        startStackView.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32).isActive = true
+        startStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
+        startStackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        startStackView.bottomAnchor.constraint(lessThanOrEqualTo: safeAreaLayoutGuide.bottomAnchor, constant: -32).isActive = true
+        
+        quizView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 24).isActive = true
+        quizView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
+        
+        messageLabel.topAnchor.constraint(equalTo: startStackView.bottomAnchor, constant: 16).isActive = true
+        messageLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        
+        resultView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 24).isActive = true
+        resultView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -24).isActive = true
+        
+        
+        quizViewTopConstraint?.isActive = true
+        resultViewTopConstraint?.isActive = true
+    }
+
+    func setupButtonActions() {
+        historyButton.addTarget(self, action: #selector(historyButtonTapped), for: .touchUpInside)
+        startButton.addTarget(self, action: #selector(startQuizButtonTapped), for: .touchUpInside)
+        resultView.onRestart = { [weak self] in self?.onRestart?() }
     }
 }

@@ -29,8 +29,6 @@ public final class QuizViewModel {
     @Published private(set) var isLoading: Bool
     @Published private(set) var isNextButtonEnabled: Bool
     
- 
-    
     init(
          service: QuizServiceProtocol,
          isLoading: Bool = false,
@@ -59,22 +57,17 @@ public final class QuizViewModel {
             isLoading = false
         }
     }
-
-
-    
+   
     func handleSelectedOption(_ optionId: String) {
-        /// Если есть вопрос и опция с таким id
         guard var question = currentQuestion,
               let index = question.options.firstIndex(where: { $0.id == optionId }) else {
             return
         }
         
-        /// Если уже выбрана — ничего не делаем
         if question.options[index].isSelected {
             return
         }
 
-        /// Сбрасываем выбор у всех опций и выбираем нужную
         question.options = question.options.map { option in
             var updatedOption = option
             updatedOption.isSelected = (option.id == optionId)
@@ -124,18 +117,17 @@ public final class QuizViewModel {
 }
 
 private extension QuizViewModel {
-    
     func makeQuestions(with response: [Quiz]) {
         self.questions = response.enumerated().map { (index, quiz) in
- 
+            
             var options: [QuizOption] = quiz.incorrectAnswers.map {
                 QuizOption(id: UUID().uuidString, title: $0, isSelected: false)
             }
-
+            
             let correctOption = QuizOption(id: UUID().uuidString, title: quiz.correctAnswer, isSelected: false)
             options.append(correctOption)
             options.shuffle()
-
+            
             return QuizQuestion(
                 title: "Вопрос \(index + 1) из \(response.count)",
                 question: quiz.question,
@@ -144,7 +136,7 @@ private extension QuizViewModel {
             )
         }
     }
-    private func showResult() {
+    func showResult() {
         guard let questions else { return }
         correctAnswersCount = userAnswers.filter { $0.isCorrect }.count
         let ratingImage = ratingRenderer.ratingImage(correctAnswersCount)
@@ -152,18 +144,5 @@ private extension QuizViewModel {
         onShowResult?(result)
         
         service.saveQuiz(with: correctAnswersCount)
-        
-        // отладка
-        print("✅ Тест завершён!")
-        print("Правильных ответов: \(correctAnswersCount) из \(userAnswers.count)")
-        
-        for (index, answer) in userAnswers.enumerated() {
-            print("""
-            Вопрос \(index + 1):
-            \(answer.question)
-            ➤ Выбранный ответ: \(answer.selectedOption.title)
-            \(answer.isCorrect ? "✅ Верно" : "❌ Неверно")
-            """)
-        }
     }
 }
