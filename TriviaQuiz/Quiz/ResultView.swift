@@ -19,13 +19,12 @@ struct ResultConfig {
           let resultCase = ResultCase.from(score: score)
           self.commentTitle = resultCase.title
           self.commentSubtitle = resultCase.subtitle(for: score, total: total)
-          self.buttonTitle = "Пройти ещё раз"
+          self.buttonTitle = "начать заново"
           self.ratingImage = ratingImage
       }
 }
 
 final class ResultView: UIView {
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()

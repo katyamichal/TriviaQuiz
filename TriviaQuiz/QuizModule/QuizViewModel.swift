@@ -1,5 +1,5 @@
 //
-//  GetStartedViewModel.swift
+//  QuizViewModel.swift
 //  TriviaQuiz
 //
 //  Created by Катя on 01.08.2025.
@@ -8,13 +8,12 @@
 import Foundation
 import Combine
 
-public final class GetStartedViewModel {
+public final class QuizViewModel {
     
     private var questions: [QuizQuestion]?
     
     var onShowResult: ((ResultConfig) -> Void)?
-
-    
+    var onShowHistory: (() -> Void)?
     private var correctAnswersCount: Int = 0
     
     private var currentQuestionIndex: Int = 0
@@ -29,14 +28,14 @@ public final class GetStartedViewModel {
     
     
     private let quizService: NetworkServiceProtocol
-    private let coordinator: GetStartedCoordinator
+
     
-    init(coordinator: GetStartedCoordinator,
+    init(
          quizService: NetworkServiceProtocol,
          isLoading: Bool = false,
          ratingRenderer: RatingRenderer = RatingRenderer()
     ) {
-        self.coordinator = coordinator
+
         self.quizService = quizService
         self.isLoading = isLoading
         self.isNextButtonEnabled = false
@@ -60,42 +59,7 @@ public final class GetStartedViewModel {
             isLoading = false
         }
     }
-    
-//    func makeQuestions(with response: [Quiz]) {
-//        self.questions = response.enumerated().map { (index, quiz) in
-//            
-//            var options = options.append(QuizOption(id: UUID().uuidString, title: quiz.correctAnswer, isSelected: false))
-//            
-//            options.shuffle()
-//            
-//            return QuizQuestion(
-//                title: "Вопрос \(index + 1) из \(response.count)",
-//                question: quiz.question,
-//                options: options,
-//                correctAnswer:
-//            )
-//        }
-//    }
-    
-    func makeQuestions(with response: [Quiz]) {
-        self.questions = response.enumerated().map { (index, quiz) in
- 
-            var options: [QuizOption] = quiz.incorrectAnswers.map {
-                QuizOption(id: UUID().uuidString, title: $0, isSelected: false)
-            }
 
-            let correctOption = QuizOption(id: UUID().uuidString, title: quiz.correctAnswer, isSelected: false)
-            options.append(correctOption)
-            options.shuffle()
-
-            return QuizQuestion(
-                title: "Вопрос \(index + 1) из \(response.count)",
-                question: quiz.question,
-                options: options,
-                correctAnswer: correctOption
-            )
-        }
-    }
 
     
     func handleSelectedOption(_ optionId: String) {
@@ -143,15 +107,37 @@ public final class GetStartedViewModel {
             showResult()
         }
     }
+}
+
+private extension QuizViewModel {
     
+    func makeQuestions(with response: [Quiz]) {
+        self.questions = response.enumerated().map { (index, quiz) in
+ 
+            var options: [QuizOption] = quiz.incorrectAnswers.map {
+                QuizOption(id: UUID().uuidString, title: $0, isSelected: false)
+            }
+
+            let correctOption = QuizOption(id: UUID().uuidString, title: quiz.correctAnswer, isSelected: false)
+            options.append(correctOption)
+            options.shuffle()
+
+            return QuizQuestion(
+                title: "Вопрос \(index + 1) из \(response.count)",
+                question: quiz.question,
+                options: options,
+                correctAnswer: correctOption
+            )
+        }
+    }
     private func showResult() {
         guard let questions else { return }
         correctAnswersCount = userAnswers.filter { $0.isCorrect }.count
-        
-       let ratingImage = ratingRenderer.ratingImage(correctAnswersCount)
-
+        let ratingImage = ratingRenderer.ratingImage(correctAnswersCount)
         let result = ResultConfig(score: correctAnswersCount, total: questions.count, ratingImage: ratingImage)
         onShowResult?(result)
+        
+        // отладка
         print("✅ Тест завершён!")
         print("Правильных ответов: \(correctAnswersCount) из \(userAnswers.count)")
         
@@ -165,4 +151,3 @@ public final class GetStartedViewModel {
         }
     }
 }
-

@@ -1,5 +1,5 @@
 //
-//  GetStartedView.swift
+//  QuizView.swift
 //  TriviaQuiz
 //
 //  Created by Катя on 01.08.2025.
@@ -7,9 +7,10 @@
 
 import UIKit
 
-final class GetStartedView: UIView {
+final class QuizView: UIView {
     
-    var onStartQuizButtonTapped: (() -> Void)?
+    var onHistoryButton: (() -> Void)?
+    var onStartQuizButton: (() -> Void)?
     var onOptionTapped: ((String) -> Void)?
     var onNextQuestion: (() -> Void)?
 
@@ -32,13 +33,16 @@ final class GetStartedView: UIView {
     
     // MARK: - UI
     
-    private(set) lazy var quizView: QuizView = {
-        let view = QuizView()
+    // MARK: View с вопросами
+    private(set) lazy var quizView: QuestionView = {
+        let view = QuestionView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isHidden = true
         return view
     }()
     
+    // MARK: Загрузка
+  
     private(set) lazy var activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.style = .large
@@ -47,16 +51,11 @@ final class GetStartedView: UIView {
         return activityIndicator
     }()
     
-    private lazy var historyButton: UIButton = {
-        let button = UIButton()
+    // MARK:  Стартовое View
+    
+    private lazy var historyButton: HistoryButton = {
+        let button = HistoryButton(title: "История")
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(.white, for: .normal)
-        button.setTitle("Начать викторину", for: .normal)
-        button.backgroundColor = .primaryTrivia
-        button.layer.cornerRadius = 16
-        button.clipsToBounds = true
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        button.widthAnchor.constraint(equalToConstant: 280).isActive = true
         return button
     }()
     
@@ -71,7 +70,6 @@ final class GetStartedView: UIView {
         label.textAlignment = .center
         return label
     }()
-    
     
     private lazy var startStackView: UIStackView = {
         let stackView = UIStackView()
@@ -108,6 +106,8 @@ final class GetStartedView: UIView {
         return button
     }()
     
+    // MARK: Результат View
+    
     private lazy var resultView: ResultView = {
         let view = ResultView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -117,15 +117,22 @@ final class GetStartedView: UIView {
     
 }
 
-extension GetStartedView {
+extension QuizView {
     func setupButtonAction() {
+        historyButton.addTarget(self, action: #selector(historyButtonTapped), for: .touchUpInside)
         startQuizButton.addTarget(self, action: #selector(startQuizButtonTapped), for: .touchUpInside)
     }
     
     @objc
-    func startQuizButtonTapped() {
-        onStartQuizButtonTapped?()
+    func historyButtonTapped() {
+        onHistoryButton?()
     }
+    
+    @objc
+    func startQuizButtonTapped() {
+        onStartQuizButton?()
+    }
+
     
     func showError(with message: NSAttributedString?) {
         print(message)
@@ -134,6 +141,7 @@ extension GetStartedView {
     func showQuestion(with question: QuizQuestion) {
         startStackView.isHidden = true
         resultView.isHidden = true
+        historyButton.isHidden = true
         quizView.isHidden = false
   
         
@@ -152,6 +160,7 @@ extension GetStartedView {
         if status {
             activityIndicator.startAnimating()
             startStackView.isHidden = true
+            historyButton.isHidden = true
             resultView.isHidden = true
             quizView.isHidden = true
             historyButton.isHidden = true
@@ -176,7 +185,7 @@ extension GetStartedView {
 
 // MARK: - UI Setups
 
-private extension GetStartedView {
+private extension QuizView {
     func setupView() {
         setupSubviews()
         setupConstraints()
@@ -184,6 +193,7 @@ private extension GetStartedView {
     }
     
     func setupSubviews() {
+        addSubview(historyButton)
         addSubview(quizView)
         addSubview(activityIndicator)
         addSubview(quizLabel)
@@ -196,7 +206,10 @@ private extension GetStartedView {
     
     
     func setupConstraints() {
-        quizLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
+        historyButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        historyButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        
+        quizLabel.topAnchor.constraint(equalTo: historyButton.bottomAnchor, constant: 96).isActive = true
         quizLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         quizLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
  

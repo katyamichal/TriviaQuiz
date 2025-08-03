@@ -9,6 +9,7 @@ import Foundation
 
 public protocol Coordinator {
     func start()
+    func removeFromParent()
 }
 
 public extension Coordinator {

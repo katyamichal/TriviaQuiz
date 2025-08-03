@@ -10,17 +10,14 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var nav: UINavigationController?
+    var coordinator: Coordinator?
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        nav = UINavigationController(rootViewController: GetStartedViewController(viewModel: GetStartedViewModel(coordinator: GetStartedCoordinatorDefault(), quizService: NetworkService())))
-        self.window = window
-        window.rootViewController = nav
-       
-        window.makeKeyAndVisible()
+        coordinator = QuizCoordinatorDefault(window: window)
+        coordinator?.start()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
